@@ -1,0 +1,12 @@
+#!/bin/sh
+# it needs to be run frequently, to be effective
+
+  obs=`ps -e | rg -w obs`
+  nobs=`ps -e | rg -w fasz`
+  pubip=`wget http://ipecho.net/plain -O - -q ; echo`
+    if [[ "$obs" == "$nobs" ]]
+      then
+        echo -e "Public: $pubip"
+    else
+      echo -e "PublicIP: Classified"
+  fi

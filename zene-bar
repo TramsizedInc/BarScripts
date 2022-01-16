@@ -1,0 +1,74 @@
+#!/bin/sh
+#ha van " - " a nevében (title tag), akkor print
+#ha nincs, akkor print "title - artist"
+# + az idő / ami hátravan
+#wal -i /run/media/csaba/BiztMent/bmbs/wallpapers/pexels-photo-2117938.jpeg
+#know know
+#https://stackoverflow.com/questions/229551/how-to-check-if-a-string-contains-a-substring-in-bash
+
+case $BLOCK_BUTTON in
+    1) mocp -G ;;#left
+#    2) mocp -;;#middle
+    3) notify-send "🎶 music module" "\- Shows the title artist of the music if it is playing
+- Left click to pause/play.
+- Scroll to play the next or previous." ;;#right
+    4) mocp -f ;;#scroll up
+    5) mocp -r ;;#scroll down
+    6) "$TERMINAL" -e "$EDITOR" "$0";;
+esac
+
+#- Middle to mute.
+#🎶🎵🎼🎹⏸️▶Two congruent black rectangles side-by-side with a space between them
+
+icon="🎶"
+
+mocp --info>/home/csaba/mocpscript/mocp.state
+
+#if [ cmp /home/csaba/mocscript/mocp.state  ]
+cmp --silent /home/csaba/mocpscript/mocp.down /home/csaba/mocpscript/mocp.state && serverstate="down" || serverstate="up"
+
+author=`mocp --info | rg Artist: | sed 's/Artist: //g'`
+songtitle=`mocp --info | rg SongTitle: | sed 's/SongTitle: //g'`
+title=`mocp --info | rg -v Song | rg Title: | sed 's/Title: //g'`
+file=`mocp --info | rg File: | sed 's/File: //g'`
+timeleft=`mocp --info | rg CurrentTime: | sed 's/CurrentTime: //g'`
+state=`mocp -i | rg State: | sed 's/State: //g'`
+
+musdir="\/run\/media\/csaba\/BiztMent\/bmbs\/Music\/"
+
+# -v +/- N ##hangeró
+# -f --next
+# -r --previous
+
+#echo $serverstate
+
+if [[ $serverstate == *"down"* ]]
+then
+    echo ""
+elif [[ $serverstate == *"up"* ]]
+then
+
+    #echo $songtitle $artist $title $file
+    if [[ $state == *"STOP"* ]]
+    then
+        return
+    else
+
+        if [[ $state == *"PAUSE"* ]]
+        then
+            timeleft="⏸"
+        fi
+
+        if [[ $author == $songtitle ]] && [[ $author == $title ]]
+        then
+            echo `echo -n $file | sed 's/\///g' | sed 's/runmediacsabaBiztMentbmbsMusic//g' | cut -c -40` "{"$timeleft"}" #"$musdir"
+        elif [[ $author == $songtitle ]]
+        then
+            echo `echo -n $title | cut -c -40` "{"$timeleft"}"
+        else
+            echo $author "-" $songtitle "{"$timeleft"}"
+        fi
+    fi
+else
+    echo "No music is playing"
+fi

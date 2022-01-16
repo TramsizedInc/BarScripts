@@ -1,0 +1,4 @@
+#!/bin/sh
+
+ip6=`ip addr show dev enp31s0 | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d'`
+  echo -e "IPv6: $ip6"

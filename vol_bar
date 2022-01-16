@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ case $BLOCK_BUTTON in
+	1) setsid -f "pavucontrol" & ;;
+	2) pamixer -t ;;
+	4) pamixer -i 5 --allow-boost ;;
+#	5) pactl set-sink-volume 15 -5% ;;
+	5) pamixer -d 5 --allow-boost ;;
+	3) notify-send "📢 Volume module" "\- Shows volume 🔊, 🔇 if muted.
+- Middle click to mute.
+- Scroll to change." ;;
+	6) "$TERMINAL" -e "$EDITOR" "$0" ;;
+ esac
+
+#vol="$(pactl get-sink-volume 1 | rg front-left | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')"
+
+vol=`pamixer --get-volume-human | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,' | sed 's/%//g'`
+
+[ $vol -eq "0" ] && echo 🔇 && exit
+
+if [ "$vol" -gt "70" ]; then
+	icon="🔊"
+elif [ "$vol" -gt "30" ]; then
+	icon="🔉"
+elif [ "$vol" -gt "0" ]; then
+	icon="🔈"
+else
+        echo 🔇 && exit
+fi
+
+echo "$icon$vol%"
